@@ -30,9 +30,9 @@ export default function A2UIFixedDemo() {
     >
       <div style={{ height: "100vh", display: "flex", flexDirection: "column" }}>
         <DemoHeader
-          badge="Cách 2B"
-          title="A2UI — fixed schema"
-          subtitle="You own the layout. The agent only supplies data."
+          badge="Cách 2B-i"
+          title="A2UI fixed — server tool (defineTool)"
+          subtitle="Layout owned by server code; the agent only supplies data."
         />
         <div style={{ flex: 1, minHeight: 0 }}>
           <Chat />

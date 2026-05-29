@@ -9,7 +9,8 @@ external agent server. One provider API key and you're running.
 | --- | --- | --- | --- |
 | `/frontend-tool` | **Cách 1** — Frontend tool + render | You (React) | You |
 | `/a2ui-dynamic` | **Cách 2A** — A2UI dynamic schema | You (catalog) | **Agent** (assembles a tree) |
-| `/a2ui-fixed` | **Cách 2B** — A2UI fixed schema | You (catalog) | You (fixed tree); agent supplies data |
+| `/a2ui-fixed` | **Cách 2B-i** — A2UI fixed via `defineTool` | You (catalog) | You (server code); agent supplies data |
+| `/a2ui-fixed-prompt` | **Cách 2B-ii** — A2UI fixed via `render_a2ui` | You (catalog) | You (pinned in prompt); agent supplies data |
 | `/open-gen-ui` | **Cách 3** — Open Generative UI | **Agent** (raw HTML) | **Agent** |
 
 ## Run
@@ -52,15 +53,32 @@ your catalog — but it can only use components you registered.
 - See `a2ui/{definitions,renderers,catalog}.ts`.
 - Provider wires the catalog via `a2ui={{ catalog }}`.
 
-### Cách 2B — A2UI fixed schema (`/a2ui-fixed`)
+### Cách 2B — A2UI fixed schema (two variants)
 
-Same catalog idea, but the layout is **authored by the developer** in
-`a2ui/flight-tree.ts` and never changes — the agent only supplies DATA. We give
-the built-in agent a server tool (`show_flight`, via `defineTool`) whose
-`execute` returns the fixed component tree + the data as an `a2ui_operations`
-container. The runtime uses `a2ui: { enabled: true, injectA2UITool: false }`
-(our tool owns the surface, so we don't want a second injected tool). The A2UI
+Same catalog idea as 2A, but the layout is **authored by the developer** in
+`a2ui/flight-tree.ts` and never changes — the agent only supplies DATA. There
+are two ways to make a built-in agent emit a fixed-layout surface, and this app
+ships both so you can compare them:
+
+**2B-i — server tool (`/a2ui-fixed`).** We give the agent a server tool
+(`show_flight`, via `defineTool`) whose `execute` returns the fixed component
+tree + data as an `a2ui_operations` container. The runtime uses
+`a2ui: { injectA2UITool: false }` (our tool owns the surface). The A2UI
 middleware detects the container in the tool result and renders it.
+The layout lives in server code, so the agent literally cannot change it — but
+this path depends on the middleware detecting `a2ui_operations` in a tool
+result (see the verification note below).
+
+**2B-ii — pinned via `render_a2ui` (`/a2ui-fixed-prompt`).** We instead let the
+runtime inject the standard `render_a2ui` tool (`a2ui: { injectA2UITool: true }`,
+same plumbing as 2A) and pin the exact component tree into the system prompt,
+instructing the LLM to reuse it verbatim and change only `data`. This rides the
+official A2UI path (lower compatibility risk), but the "fix" is prompt-enforced,
+so a misbehaving model could deviate from the layout.
+
+Rule of thumb: use **2B-i** when the layout must be guaranteed immutable; use
+**2B-ii** when you want the well-trodden `render_a2ui` path and trust the model
+to follow the pinned tree.
 
 ### Cách 3 — Open Generative UI (`/open-gen-ui`)
 

@@ -19,11 +19,19 @@ const demos = [
   },
   {
     href: "/a2ui-fixed",
-    badge: "Cách 2B",
-    title: "A2UI — fixed schema",
+    badge: "Cách 2B-i",
+    title: "A2UI fixed — server tool (defineTool)",
     blurb:
-      "A server tool returns a fixed, developer-authored component tree and the agent only fills in the data via path bindings. The layout never changes; only the content does.",
-    who: "Dev owns the layout + catalog · Agent supplies data only",
+      "A server tool (defineTool) returns a fixed, developer-authored component tree and the agent only fills in data via path bindings. The layout is owned by server code, so it can never change.",
+    who: "Dev owns the layout (server code) · Agent supplies data only",
+  },
+  {
+    href: "/a2ui-fixed-prompt",
+    badge: "Cách 2B-ii",
+    title: "A2UI fixed — pinned via render_a2ui",
+    blurb:
+      "Same fixed flight card, but produced through the standard render_a2ui tool: the exact component tree is pinned into the system prompt and the LLM reuses it verbatim, changing only data. Lower compatibility risk; the 'fix' is prompt-enforced.",
+    who: "Dev pins the layout (prompt) · Agent calls render_a2ui",
   },
   {
     href: "/open-gen-ui",
