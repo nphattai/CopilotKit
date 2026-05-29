@@ -28,6 +28,28 @@ nx run genui-showcase:dev   # or: cd examples/v2/react/genui-showcase && pnpm de
 
 Open http://localhost:3000 and pick a demo from the landing page.
 
+## Deploy to Vercel (to get a public URL)
+
+This is an Nx + pnpm-workspace monorepo, so Vercel cannot build this app in
+isolation — the `@copilotkit/*` workspace packages must be installed and built
+first. The included `vercel.json` handles that with the same pattern the repo's
+other v2 examples use (it `cd`s to the monorepo root, installs the whole
+workspace, then runs `nx run genui-showcase:build`, which builds the dependency
+packages via `^build`).
+
+To deploy:
+
+1. Create a Vercel project from this repo and set **Root Directory** to
+   `examples/v2/react/genui-showcase`. Vercel reads `vercel.json` from there.
+2. Add an environment variable: one of `OPENAI_API_KEY` /
+   `ANTHROPIC_API_KEY` / `GOOGLE_API_KEY` (required for the agent to respond).
+3. Deploy. (No other settings needed — `vercel.json` sets the install/build
+   commands and `framework: nextjs`.)
+
+Note: this is a standalone example under `examples/`. It is **not** part of
+CopilotKit's hosted `showcase/` registry, so it won't appear there
+automatically — you deploy it as its own Vercel project.
+
 ## How each approach works
 
 ### Cách 1 — Frontend tool + render (`/frontend-tool`)
