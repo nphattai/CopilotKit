@@ -53,22 +53,32 @@ export interface FlightData {
  * Build the A2UI operations container the A2UI middleware looks for in a tool
  * result. The component tree is FIXED (above); only `data` varies per call.
  *
- * Shape mirrors `buildA2uiOperationsFromToolCall` in
- * showcase/shared/typescript/tools/generate-a2ui.ts.
+ * Format matches @ag-ui/a2ui-middleware v0.0.5: `a2ui_operations` is an array
+ * of v0.9 messages keyed by `createSurface` / `updateComponents` /
+ * `updateDataModel` (NOT `{ type: "..." }`). The middleware scans
+ * TOOL_CALL_RESULT content for this key and renders it.
  */
 export function buildFlightSurface(data: FlightData) {
   const surfaceId = "flight-surface";
   return {
     a2ui_operations: [
-      { type: "create_surface", surfaceId, catalogId: FLIGHT_CATALOG_ID },
       {
-        type: "update_components",
-        surfaceId,
-        components: flightComponents as unknown as Array<
-          Record<string, unknown>
-        >,
+        version: "v0.9",
+        createSurface: { surfaceId, catalogId: FLIGHT_CATALOG_ID },
       },
-      { type: "update_data_model", surfaceId, data },
+      {
+        version: "v0.9",
+        updateComponents: {
+          surfaceId,
+          components: flightComponents as unknown as Array<
+            Record<string, unknown>
+          >,
+        },
+      },
+      {
+        version: "v0.9",
+        updateDataModel: { surfaceId, path: "/", value: data },
+      },
     ],
   };
 }
