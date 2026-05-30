@@ -11,8 +11,9 @@
 import { createCatalog } from "@copilotkit/a2ui-renderer";
 import { dashboardDefinitions } from "./definitions";
 import { dashboardRenderers } from "./renderers";
+import { DASHBOARD_CATALOG_ID } from "./constants";
 
-export const DASHBOARD_CATALOG_ID = "copilotkit://genui-dashboard-catalog";
+export { DASHBOARD_CATALOG_ID };
 
 export const dashboardCatalog = createCatalog(
   dashboardDefinitions,
